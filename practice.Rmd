@@ -1,0 +1,53 @@
+---
+title: "**EPSY Assignment 1**"
+author: "Bonnine, Channel & Dongwook"
+output: 
+  html_document:
+  toc: true
+  toc_float: true
+
+
+---
+
+```{r one,message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(broom)
+
+fert<-read.csv("fertility2.csv")
+fert %>% head(n=6)
+```
+
+``` {r two, message=FALSE, warning=FALSE}
+fert %>% group_by(region) %>% summarise(MEAN=mean(infant_mortality), SD=sd(infant_mortality))
+```
+
+``` {r, three, message=FALSE, warning=FALSE}
+fert= fert %>% mutate(gni_class = if_else(gni_class == "Upper/Middle" | gni_class == "Upper", 1,0))
+fert=fert %>% rename(high_gni = gni_class)
+fert
+```
+
+``` {r four, mesage=FALSE, warning=FALSE}
+lm_a<-lm(infant_mortality~1+high_gni+educ_female, data=fert)
+tidy(lm_a)
+```
+
+
+``` {r five, message=FALSE, warning=FALSE}
+fert = fert %>% mutate(y_hat= 63.4 -17.6 * high_gni -3.6 * educ_female) 
+head(fert)
+fert = fert %>% mutate(errors=infant_mortality-y_hat)
+tail(fert)
+fert %>% mutate(sq_errors=errors^2) %>% summarise(SSE=sum(sq_errors))
+```
+
+For analysis, the authors referenced the article by [@Jensen2012] and the book by [@Fox2009]
+
+# References
+
+
+
+dnorm(x=60, mean=50, sd=10) * dnorm(x=65, mean=50, sd=10) * dnorm(x=55, mean=50, sd=10)
+prod(dnorm(x=c(60,65,67), mean=50, sd=10))
+
